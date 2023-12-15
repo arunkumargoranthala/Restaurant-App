@@ -95,22 +95,29 @@ const DishesComponent = () => {
                 <p>{dish.dish_description}</p>
                 <p>{`${dish.dish_calories} calories`}</p>
                 <img src={dish.dish_image} alt={dish.dish_name} />
-                <p>{dishQuantities[dish.dish_id] || 0}</p>
-                <button
-                  type="button"
-                  onClick={() => handleDecrement(dish.dish_id)}
-                >
-                  -
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleIncrement(dish.dish_id)}
-                >
-                  +
-                </button>
+
+                {/* Render buttons and quantity only if the dish is available */}
+                {dish.dish_Availability !== false && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleDecrement(dish.dish_id)}
+                    >
+                      -
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleIncrement(dish.dish_id)}
+                    >
+                      +
+                    </button>
+                    <p>{dishQuantities[dish.dish_id] || 0}</p>
+                  </>
+                )}
+
                 {/* Check if "addonCat" key exists and has non-empty value */}
                 {dish.addonCat && dish.addonCat.length > 0 ? (
-                  <p>Customization available</p>
+                  <p>Customizations available</p>
                 ) : (
                   <p />
                 )}
