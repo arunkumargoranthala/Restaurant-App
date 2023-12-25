@@ -1,21 +1,27 @@
-/* import './App.css'
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
 
-//write your code here
-const App = () => <div>Hello World</div>
-
-export default App
-*/
-
-// src/App.js
-import React from 'react'
+import React, {Component} from 'react'
+import Cart from './cart'
 import RestaurantPage from './RestaurantPage'
 
-function App() {
-  return (
-    <div className="App">
-      <RestaurantPage />
-    </div>
-  )
+import Login from './Login'
+
+import CartContext from './CartContext'
+
+import ProtectedRoute from './ProtectedRoute'
+
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/cart" component={Cart} />
+          <ProtectedRoute exact path="/" component={RestaurantPage} />
+        </Switch>
+      </BrowserRouter>
+    )
+  }
 }
 
 export default App
