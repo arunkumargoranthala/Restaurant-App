@@ -1,19 +1,17 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable prettier/prettier */
 /* eslint-disable camelcase */
 import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import './RestaurantPage.css';
-import CartContext from './CartContext'; 
 
 const DishesComponent = (props) => {
   const [data, setData] = useState(null);
   const [activeCategory, setActiveCategory] = useState('');
   const [dishQuantities, setDishQuantities] = useState({});
-  const [cartItems, setCartItems] = useState([]); 
-  const [addToCartVisible, setAddToCartVisible] = useState(false);
   const [cartCounts, setCartCounts] = useState({});
-  const [selectedDishId, setSelectedDishId] = useState(null); 
+  const [selectedDishId, setSelectedDishId] = useState(null);
 
   const onClickLogout = () => {
     const { history } = props;
@@ -62,7 +60,6 @@ const DishesComponent = (props) => {
       [activeCategory]: prevCounts[activeCategory] || 0,
     }));
 
-    // Set the new active category
     setActiveCategory(category);
   };
 
@@ -75,7 +72,7 @@ const DishesComponent = (props) => {
       ...prevCounts,
       [activeCategory]: (prevCounts[activeCategory] || 0) + 1,
     }));
-    setSelectedDishId(dishId); // Set the selected dish when the "+" button is pressed
+    setSelectedDishId(dishId);
   };
 
   const handleDecrement = (dishId) => {
@@ -95,11 +92,10 @@ const DishesComponent = (props) => {
   const handleAddToCart = () => {
     if (selectedDishId !== null) {
       const quantity = dishQuantities[selectedDishId] || 0;
-
-      // Reset selectedDishId after adding to cart
+        console.log(selectedDishId)
+        console.log(quantity)      
+        props.onAddToCart(selectedDishId, quantity);
       setSelectedDishId(null);
-      console.log(selectedDishId);
-      console.log(quantity);
     }
   };
 
@@ -110,90 +106,83 @@ const DishesComponent = (props) => {
   const { restaurant_name, table_menu_list } = data[0];
 
   return (
-    <CartContext.Provider
-      value={{
-        cartList: cartItems,
-        removeAllCartItems: () => setCartItems([]),
-        addCartItem: (item) => setCartItems((prevItems) => [...prevItems, item]),
-      }}
-    >
+    <div>
+      <h1>{restaurant_name}</h1>
+      <header>
+        <p>My Orders</p>
+        <span>
+          Cart Count: <p>{cartCounts[activeCategory] || 0}</p>
+        </span>
+      </header>
+      <button
+        type="button"
+        className="logout-desktop-btn"
+        onClick={onClickLogout}
+      >
+        Logout
+      </button>
       <div>
-        <h1>{restaurant_name}</h1>
-        <header>
-          <p>My Orders</p>
-          <span>
-            Cart Count: <p>{cartCounts[activeCategory] || 0}</p>
-          </span>
-        </header>
-        <button
-          type="button"
-          className="logout-desktop-btn"
-          onClick={onClickLogout}
-        >
-          Logout
-        </button>
-        <div>
-          {table_menu_list.map((category) => (
-            <button
-              type="button"
-              key={category.menu_category_id}
-              onClick={() => handleCategoryClick(category.menu_category)}
-              className={category.menu_category === activeCategory ? 'active' : ''}
-            >
-              {category.menu_category}
-            </button>
-          ))}
-        </div>
-        {activeCategory && (
-          <div>
-            <h2>{activeCategory}</h2>
-            {table_menu_list
-              .find((category) => category.menu_category === activeCategory)
-              .category_dishes.map((dish) => (
-                <div key={dish.dish_id}>
-                  <h3>{dish.dish_name}</h3>
-                  <p>{`${dish.dish_currency} ${dish.dish_price}`}</p>
-                  <p>{dish.dish_description}</p>
-                  <p>{`${dish.dish_calories} calories`}</p>
-                  <img src={dish.dish_image} alt={dish.dish_name} />
-
-                  {dish.dish_Availability !== false && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleDecrement(dish.dish_id)}
-                      >
-                        -
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleIncrement(dish.dish_id)}
-                      >
-                        +
-                      </button>
-                      <p>{dishQuantities[dish.dish_id] || 0}</p>
-                      {selectedDishId === dish.dish_id && (
-                        <button type="button" onClick={handleAddToCart}>
-                          ADD TO CART
-                        </button>
-                      )}
-                    </>
-                  )}
-
-                  {dish.addonCat && dish.addonCat.length > 0 ? (
-                    <p>Customizations available</p>
-                  ) : (
-                    <p />
-                  )}
-
-                  {dish.dish_Availability === false && <p>Not available</p>}
-                </div>
-              ))}
-          </div>
-        )}
+        {table_menu_list.map((category) => (
+          <button
+            type="button"
+            key={category.menu_category_id}
+            onClick={() => handleCategoryClick(category.menu_category)}
+            className={category.menu_category === activeCategory ? 'active' : ''}
+          >
+            {category.menu_category}
+          </button>
+        ))}
       </div>
-    </CartContext.Provider>
+      {activeCategory && (
+        <div>
+          <h2>{activeCategory}</h2>
+          {table_menu_list
+            .find((category) => category.menu_category === activeCategory)
+            .category_dishes.map((dish) => (
+              <div key={dish.dish_id}>
+                <h3>{dish.dish_name}</h3>
+                <p>{`${dish.dish_currency} ${dish.dish_price}`}</p>
+                <p>{dish.dish_description}</p>
+                <p>{`${dish.dish_calories} calories`}</p>
+                <img src={dish.dish_image} alt={dish.dish_name} />
+
+                {dish.dish_Availability !== false && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleDecrement(dish.dish_id)}
+                    >
+                      -
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleIncrement(dish.dish_id)}
+                    >
+                      +
+                    </button>
+                    <p>{dishQuantities[dish.dish_id] || 0}</p>
+                    {selectedDishId === dish.dish_id && (
+                      <button type="button" onClick={handleAddToCart}>
+                        ADD TO CART
+                      </button>
+                    )}
+                  </>
+                )}
+
+                {dish.addonCat && dish.addonCat.length > 0 ? (
+                  <p>Customizations available</p>
+                ) : (
+                  <p />
+                )}
+
+                {dish.dish_Availability === false && <p>Not available</p>}
+              </div>
+            ))}
+        </div>
+      )}
+    </div>
   );
 };
 
 export default DishesComponent;
+
