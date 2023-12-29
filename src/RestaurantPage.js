@@ -1,109 +1,107 @@
 /* eslint-disable react/destructuring-assignment */
-/* eslint-disable prettier/prettier */
 /* eslint-disable camelcase */
-import Cookies from 'js-cookie';
-import { Link } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
-import './RestaurantPage.css';
+import Cookies from 'js-cookie'
+import {Link} from 'react-router-dom'
+import React, {useState, useEffect} from 'react'
+import './RestaurantPage.css'
 
-const DishesComponent = (props) => {
-  const [data, setData] = useState(null);
-  const [activeCategory, setActiveCategory] = useState('');
-  const [dishQuantities, setDishQuantities] = useState({});
-  const [cartCounts, setCartCounts] = useState({});
-  const [selectedDishId, setSelectedDishId] = useState(null);
+const DishesComponent = props => {
+  const [data, setData] = useState(null)
+  const [activeCategory, setActiveCategory] = useState('')
+  const [dishQuantities, setDishQuantities] = useState({})
+  const [cartCounts, setCartCounts] = useState({})
+  const [selectedDishId, setSelectedDishId] = useState(null)
 
   const onClickLogout = () => {
-    const { history } = props;
-    Cookies.remove('jwt_token');
-    history.replace('/login');
-  };
+    const {history} = props
+    Cookies.remove('jwt_token')
+    history.replace('/login')
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       if (!data) {
         try {
           const response = await fetch(
-            'https://run.mocky.io/v3/77a7e71b-804a-4fbd-822c-3e365d3482cc'
-          );
-          const jsonData = await response.json();
-          setData(jsonData);
+            'https://run.mocky.io/v3/77a7e71b-804a-4fbd-822c-3e365d3482cc',
+          )
+          const jsonData = await response.json()
+          setData(jsonData)
 
           if (
             jsonData &&
             jsonData.length > 0 &&
             jsonData[0].table_menu_list.length > 0
           ) {
-            const firstCategory =
-              jsonData[0].table_menu_list[0].menu_category;
-            setActiveCategory(firstCategory);
+            const firstCategory = jsonData[0].table_menu_list[0].menu_category
+            setActiveCategory(firstCategory)
           }
         } catch (error) {
-          console.error('Error fetching data:', error);
+          console.error('Error fetching data:', error)
         }
       }
-    };
+    }
 
-    fetchData();
-  }, [data]);
+    fetchData()
+  }, [data])
 
   useEffect(() => {
-    setCartCounts((prevCounts) => ({
+    setCartCounts(prevCounts => ({
       ...prevCounts,
       [activeCategory]: prevCounts[activeCategory] || 0,
-    }));
-  }, [activeCategory]);
+    }))
+  }, [activeCategory])
 
-  const handleCategoryClick = (category) => {
-    setCartCounts((prevCounts) => ({
+  const handleCategoryClick = category => {
+    setCartCounts(prevCounts => ({
       ...prevCounts,
       [activeCategory]: prevCounts[activeCategory] || 0,
-    }));
+    }))
 
-    setActiveCategory(category);
-  };
+    setActiveCategory(category)
+  }
 
-  const handleIncrement = (dishId) => {
-    setDishQuantities((prevQuantities) => ({
+  const handleIncrement = dishId => {
+    setDishQuantities(prevQuantities => ({
       ...prevQuantities,
       [dishId]: (prevQuantities[dishId] || 0) + 1,
-    }));
-    setCartCounts((prevCounts) => ({
+    }))
+    setCartCounts(prevCounts => ({
       ...prevCounts,
       [activeCategory]: (prevCounts[activeCategory] || 0) + 1,
-    }));
-    setSelectedDishId(dishId);
-  };
+    }))
+    setSelectedDishId(dishId)
+  }
 
-  const handleDecrement = (dishId) => {
-    setDishQuantities((prevQuantities) => {
-      const newQuantity = (prevQuantities[dishId] || 0) - 1;
+  const handleDecrement = dishId => {
+    setDishQuantities(prevQuantities => {
+      const newQuantity = (prevQuantities[dishId] || 0) - 1
       return {
         ...prevQuantities,
         [dishId]: newQuantity >= 0 ? newQuantity : 0,
-      };
-    });
-    setCartCounts((prevCounts) => ({
+      }
+    })
+    setCartCounts(prevCounts => ({
       ...prevCounts,
       [activeCategory]: Math.max((prevCounts[activeCategory] || 0) - 1, 0),
-    }));
-  };
+    }))
+  }
 
   const handleAddToCart = () => {
     if (selectedDishId !== null) {
-      const quantity = dishQuantities[selectedDishId] || 0;
-        console.log(selectedDishId)
-        console.log(quantity)      
-        props.onAddToCart(selectedDishId, quantity);
-      setSelectedDishId(null);
+      const quantity = dishQuantities[selectedDishId] || 0
+      console.log(selectedDishId)
+      console.log(quantity)
+      props.onAddToCart(selectedDishId, quantity)
+      setSelectedDishId(null)
     }
-  };
-
-  if (!data) {
-    return <p>Loading...</p>;
   }
 
-  const { restaurant_name, table_menu_list } = data[0];
+  if (!data) {
+    return <p>Loading...</p>
+  }
+
+  const {restaurant_name, table_menu_list} = data[0]
 
   return (
     <div>
@@ -122,12 +120,14 @@ const DishesComponent = (props) => {
         Logout
       </button>
       <div>
-        {table_menu_list.map((category) => (
+        {table_menu_list.map(category => (
           <button
             type="button"
             key={category.menu_category_id}
             onClick={() => handleCategoryClick(category.menu_category)}
-            className={category.menu_category === activeCategory ? 'active' : ''}
+            className={
+              category.menu_category === activeCategory ? 'active' : ''
+            }
           >
             {category.menu_category}
           </button>
@@ -137,8 +137,8 @@ const DishesComponent = (props) => {
         <div>
           <h2>{activeCategory}</h2>
           {table_menu_list
-            .find((category) => category.menu_category === activeCategory)
-            .category_dishes.map((dish) => (
+            .find(category => category.menu_category === activeCategory)
+            .category_dishes.map(dish => (
               <div key={dish.dish_id}>
                 <h3>{dish.dish_name}</h3>
                 <p>{`${dish.dish_currency} ${dish.dish_price}`}</p>
@@ -181,8 +181,7 @@ const DishesComponent = (props) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default DishesComponent;
-
+export default DishesComponent
