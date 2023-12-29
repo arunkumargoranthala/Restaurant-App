@@ -14,7 +14,7 @@ class App extends Component {
     const newCartItem = {dishId, quantity}
     this.setState(prevState => {
       const updatedCartItems = [...prevState.cartItems, newCartItem]
-      console.log('Updated Cart Items:', updatedCartItems) // Add this console.log
+      console.log('Updated Cart Items:', updatedCartItems)
       return {cartItems: updatedCartItems}
     })
   }
