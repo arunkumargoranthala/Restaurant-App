@@ -1,16 +1,17 @@
+// Cart.js
 import React from 'react'
+import {useCart} from './CartContext'
 
-const Cart = ({cartItems}) => {
-  console.log('Cart Props:', cartItems)
+const Cart = () => {
+  const {selectedDishId, quantity} = useCart()
+  console.log(selectedDishId)
+  console.log(quantity)
+
   return (
     <div>
-      <h1>Cart</h1>
-      {cartItems.map(item => (
-        <div key={item.dishId}>
-          <p>Dish ID: {item.dishId}</p>
-          <p>Quantity: {item.quantity}</p>
-        </div>
-      ))}
+      <h2>Cart</h2>
+      <p>{selectedDishId}</p>
+      <p>{quantity}</p>
     </div>
   )
 }

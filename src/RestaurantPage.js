@@ -1,16 +1,20 @@
-/* eslint-disable react/destructuring-assignment */
+// ./src/RestaurantPage.js
 /* eslint-disable camelcase */
 import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
 import React, {useState, useEffect} from 'react'
 import './RestaurantPage.css'
+import CartContext from './CartContext'
 
 const DishesComponent = props => {
   const [data, setData] = useState(null)
   const [activeCategory, setActiveCategory] = useState('')
   const [dishQuantities, setDishQuantities] = useState({})
+  const [cartItems, setCartItems] = useState([])
+  const [addToCartVisible, setAddToCartVisible] = useState(false)
   const [cartCounts, setCartCounts] = useState({})
   const [selectedDishId, setSelectedDishId] = useState(null)
+  const [currentDishId, setDishId] = useState(null) // Updated the name of the state variable
 
   const onClickLogout = () => {
     const {history} = props
@@ -58,6 +62,7 @@ const DishesComponent = props => {
       [activeCategory]: prevCounts[activeCategory] || 0,
     }))
 
+    // Set the new active category
     setActiveCategory(category)
   }
 
@@ -70,7 +75,8 @@ const DishesComponent = props => {
       ...prevCounts,
       [activeCategory]: (prevCounts[activeCategory] || 0) + 1,
     }))
-    setSelectedDishId(dishId)
+    setDishId(dishId) // Update the state variable
+    setSelectedDishId(dishId) // Set the selected dish when the "+" button is pressed
   }
 
   const handleDecrement = dishId => {
@@ -85,15 +91,17 @@ const DishesComponent = props => {
       ...prevCounts,
       [activeCategory]: Math.max((prevCounts[activeCategory] || 0) - 1, 0),
     }))
+    setDishId(dishId) // Update the state variable
   }
 
   const handleAddToCart = () => {
-    if (selectedDishId !== null) {
-      const quantity = dishQuantities[selectedDishId] || 0
-      console.log(selectedDishId)
+    if (currentDishId !== null) {
+      const quantity = dishQuantities[currentDishId] || 0
+
+      // Reset currentDishId after adding to cart
+      setDishId(null)
+      console.log(currentDishId)
       console.log(quantity)
-      props.onAddToCart(selectedDishId, quantity)
-      setSelectedDishId(null)
     }
   }
 

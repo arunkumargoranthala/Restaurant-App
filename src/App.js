@@ -1,46 +1,24 @@
-import {BrowserRouter, Route, Switch} from 'react-router-dom'
+// App.js
 import React, {Component} from 'react'
-import Cart from './cart'
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import RestaurantPage from './RestaurantPage'
 import Login from './Login'
+import Cart from './cart' // Import the Cart component
 import ProtectedRoute from './ProtectedRoute'
+import {CartProvider} from './CartContext' // Import the CartProvider
 
 class App extends Component {
-  state = {
-    cartItems: [],
-  }
-
-  handleAddToCart = (dishId, quantity) => {
-    const newCartItem = {dishId, quantity}
-    this.setState(prevState => {
-      const updatedCartItems = [...prevState.cartItems, newCartItem]
-      console.log('Updated Cart Items:', updatedCartItems)
-      return {cartItems: updatedCartItems}
-    })
-  }
-
   render() {
-    const {cartItems} = this.state
-    console.log(cartItems)
-
     return (
-      <BrowserRouter>
-        <Switch>
-          <Route exact path="/login" component={Login} />
-          <Route
-            exact
-            path="/cart"
-            component={() => <Cart cartItems={cartItems} />}
-          />
-          <ProtectedRoute
-            exact
-            path="/"
-            render={props => (
-              <RestaurantPage {...props} onAddToCart={this.handleAddToCart} />
-            )}
-          />
-        </Switch>
-      </BrowserRouter>
+      <CartProvider>
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/cart" component={Cart} />
+            <ProtectedRoute exact path="/" component={RestaurantPage} />
+          </Switch>
+        </BrowserRouter>
+      </CartProvider>
     )
   }
 }
