@@ -99,12 +99,38 @@ class DishesComponent extends Component {
 
     if (selectedDishId !== null) {
       const quantity = dishQuantities[selectedDishId] || 0
-      console.log(selectedDishId)
-      console.log(quantity)
-      // Assuming onAddToCart is a function provided by CartContext
-      this.props.onAddToCart(selectedDishId, quantity)
-      this.setState({selectedDishId: null})
+
+      // Get additional details of the selected dish
+      const selectedDish = this.getSelectedDishDetails(selectedDishId)
+
+      if (selectedDish) {
+        const {dish_name, dish_image} = selectedDish
+
+        this.props.onAddToCart(selectedDishId, quantity, dish_name, dish_image)
+
+        this.setState({selectedDishId: null})
+      }
     }
+  }
+
+  getSelectedDishDetails = dishId => {
+    const {data, activeCategory} = this.state
+
+    if (data) {
+      const selectedCategory = data[0].table_menu_list.find(
+        category => category.menu_category === activeCategory,
+      )
+
+      if (selectedCategory) {
+        const selectedDish = selectedCategory.category_dishes.find(
+          dish => dish.dish_id === dishId,
+        )
+
+        return selectedDish
+      }
+    }
+
+    return null
   }
 
   onClickLogout = () => {
